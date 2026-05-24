@@ -14,6 +14,7 @@ function EmployeeDashboard({ user, onLogout }) {
 
     const token = localStorage.getItem('token');
     const employeeId = user?.userId;
+    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
     const fetchData = async () => {
         if (!token) {
@@ -30,13 +31,13 @@ function EmployeeDashboard({ user, onLogout }) {
 
         try {
             const [apptsRes, salaryRes, complaintsRes] = await Promise.all([
-                axios.get(`http://localhost:5000/api/employee/appointments/${employeeId}`, { 
+                axios.get(`${API_URL}/employee/appointments/${employeeId}`, { 
                     headers: { Authorization: `Bearer ${token}` } 
                 }),
-                axios.get(`http://localhost:5000/api/employee/salary/${employeeId}`, { 
+                axios.get(`${API_URL}/employee/salary/${employeeId}`, { 
                     headers: { Authorization: `Bearer ${token}` } 
                 }),
-                axios.get('http://localhost:5000/api/employee/my-complaints', { 
+                axios.get(`${API_URL}/employee/my-complaints`, { 
                     headers: { Authorization: `Bearer ${token}` } 
                 })
             ]);
@@ -55,7 +56,7 @@ function EmployeeDashboard({ user, onLogout }) {
 
     const updateStatus = async (id, status) => {
         try {
-            await axios.put(`http://localhost:5000/api/employee/appointments/${id}/status`, 
+            await axios.put(`${API_URL}/employee/appointments/${id}/status`, 
                 { status }, 
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -70,7 +71,7 @@ function EmployeeDashboard({ user, onLogout }) {
     const rescheduleAppointment = async () => {
         if (!rescheduleData.id || !rescheduleData.date || !rescheduleData.time) return;
         try {
-            await axios.put(`http://localhost:5000/api/employee/appointments/${rescheduleData.id}/reschedule`, 
+            await axios.put(`${API_URL}/employee/appointments/${rescheduleData.id}/reschedule`, 
                 { appointment_date: rescheduleData.date, appointment_time: rescheduleData.time },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -85,7 +86,7 @@ function EmployeeDashboard({ user, onLogout }) {
 
     const downloadSalary = async () => {
         try {
-            const response = await axios.get(`http://localhost:5000/api/employee/download-salary/${employeeId}`, {
+            const response = await axios.get(`${API_URL}/employee/download-salary/${employeeId}`, {
                 headers: { Authorization: `Bearer ${token}` },
                 responseType: 'blob'
             });
@@ -109,7 +110,7 @@ function EmployeeDashboard({ user, onLogout }) {
             return;
         }
         try {
-            await axios.post('http://localhost:5000/api/employee/complaint', 
+            await axios.post(`${API_URL}/employee/complaint`, 
                 { subject: complaintSubject, message: complaintMessage }, 
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -125,6 +126,7 @@ function EmployeeDashboard({ user, onLogout }) {
 
     useEffect(() => { 
         fetchData(); 
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const formatM = (amount) => `M ${parseFloat(amount || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
@@ -132,32 +134,36 @@ function EmployeeDashboard({ user, onLogout }) {
     const totalIncome = appointments.filter(a => a.payment_status === 'PAID').reduce((sum, a) => sum + (parseFloat(a.amount) || 0), 0);
 
     if (loading) {
-        return React.createElement('div', { className: 'dashboard-container' },
-            React.createElement('div', { className: 'sidebar' },
-                React.createElement('div', { className: 'sidebar-logo' }, '✂️ LEVIS.BARBER'),
-                React.createElement('div', { className: 'sidebar-footer' },
-                    React.createElement('button', { className: 'logout-btn', onClick: onLogout }, 'Logout')
-                )
-            ),
-            React.createElement('div', { className: 'main-content' },
-                React.createElement('h2', null, 'Loading employee dashboard...')
-            )
+        return (
+            <div className="dashboard-container">
+                <div className="sidebar">
+                    <div className="sidebar-logo">✂️ LEVIS.BARBER</div>
+                    <div className="sidebar-footer">
+                        <button className="logout-btn" onClick={onLogout}>Logout</button>
+                    </div>
+                </div>
+                <div className="main-content">
+                    <h2>Loading employee dashboard...</h2>
+                </div>
+            </div>
         );
     }
 
     if (error) {
-        return React.createElement('div', { className: 'dashboard-container' },
-            React.createElement('div', { className: 'sidebar' },
-                React.createElement('div', { className: 'sidebar-logo' }, '✂️ LEVIS.BARBER'),
-                React.createElement('div', { className: 'sidebar-footer' },
-                    React.createElement('button', { className: 'logout-btn', onClick: onLogout }, 'Logout')
-                )
-            ),
-            React.createElement('div', { className: 'main-content' },
-                React.createElement('h2', null, 'Error'),
-                React.createElement('p', { style: { color: '#ff6a6a' } }, error),
-                React.createElement('button', { className: 'btn-orange', onClick: fetchData, style: { width: 'auto', marginTop: '20px' } }, 'Retry')
-            )
+        return (
+            <div className="dashboard-container">
+                <div className="sidebar">
+                    <div className="sidebar-logo">✂️ LEVIS.BARBER</div>
+                    <div className="sidebar-footer">
+                        <button className="logout-btn" onClick={onLogout}>Logout</button>
+                    </div>
+                </div>
+                <div className="main-content">
+                    <h2>Error</h2>
+                    <p style={{ color: '#ff6a6a' }}>{error}</p>
+                    <button className="btn-orange" onClick={fetchData} style={{ width: 'auto', marginTop: '20px' }}>Retry</button>
+                </div>
+            </div>
         );
     }
 

@@ -9,12 +9,15 @@ function CustomerDashboard({ user, onLogout }) {
     const [activeTab, setActiveTab] = useState('book');
     const [booking, setBooking] = useState({ custom_service: '', appointment_date: '', appointment_time: '', payment_method: 'CASH', amount: '' });
     const token = localStorage.getItem('token');
+    
+    // Get API URL from environment variable or use default
+    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
     const fetchData = async () => {
         try {
             const [apptsRes, complaintsRes] = await Promise.all([
-                axios.get(`http://localhost:5000/api/customer/my-appointments/${user?.userId}`, { headers: { Authorization: `Bearer ${token}` } }),
-                axios.get(`http://localhost:5000/api/customer/my-complaints/${user?.userId}`, { headers: { Authorization: `Bearer ${token}` } })
+                axios.get(`${API_URL}/customer/my-appointments/${user?.userId}`, { headers: { Authorization: `Bearer ${token}` } }),
+                axios.get(`${API_URL}/customer/my-complaints/${user?.userId}`, { headers: { Authorization: `Bearer ${token}` } })
             ]);
             setMyAppointments(apptsRes.data);
             setComplaints(complaintsRes.data);
@@ -27,16 +30,16 @@ function CustomerDashboard({ user, onLogout }) {
             return;
         }
         try {
-            await axios.post('http://localhost:5000/api/customer/appointments', booking, { headers: { Authorization: `Bearer ${token}` } });
+            await axios.post(`${API_URL}/customer/appointments`, booking, { headers: { Authorization: `Bearer ${token}` } });
             setBooking({ custom_service: '', appointment_date: '', appointment_time: '', payment_method: 'CASH', amount: '' });
             fetchData();
-            alert('Appointment booked successfully!');
+            alert('Appointment booked successfully! A barber will be assigned.');
         } catch (error) { console.error(error); alert('Failed to book appointment'); }
     };
 
     const downloadReceipt = async (appointmentId) => {
         try {
-            const response = await axios.get(`http://localhost:5000/api/customer/download-receipt/${appointmentId}`, {
+            const response = await axios.get(`${API_URL}/customer/download-receipt/${appointmentId}`, {
                 headers: { Authorization: `Bearer ${token}` },
                 responseType: 'blob'
             });
@@ -47,21 +50,25 @@ function CustomerDashboard({ user, onLogout }) {
             document.body.appendChild(link);
             link.click();
             link.remove();
+            alert('Receipt downloaded!');
         } catch (error) { console.error(error); alert('Failed to download receipt'); }
     };
 
     const sendComplaint = async () => {
         if (!complaintSubject || !complaintMessage) return;
         try {
-            await axios.post('http://localhost:5000/api/customer/complaint', { subject: complaintSubject, message: complaintMessage }, { headers: { Authorization: `Bearer ${token}` } });
+            await axios.post(`${API_URL}/customer/complaint`, { subject: complaintSubject, message: complaintMessage }, { headers: { Authorization: `Bearer ${token}` } });
             setComplaintSubject('');
             setComplaintMessage('');
             fetchData();
-            alert('Complaint sent!');
+            alert('Complaint sent to owner!');
         } catch (error) { console.error(error); }
     };
 
-    useEffect(() => { fetchData(); }, []);
+    useEffect(() => { 
+        fetchData(); 
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
         <div className="dashboard-container">
@@ -98,15 +105,16 @@ function CustomerDashboard({ user, onLogout }) {
                             <thead><tr><th>Service</th><th>Barber</th><th>Date</th><th>Time</th><th>Status</th><th>Payment</th><th>Receipt</th></tr></thead>
                             <tbody>{myAppointments.map(a => (
                                 <tr key={a.appointment_id}>
-                                    <td>{a.service_description}</td>
-                                    <td>{a.barber_name}</td>
+                                    <td>{a.service_description || a.custom_service}</td>
+                                    <td>{a.barber_name || 'Pending Assignment'}</td>
                                     <td>{a.appointment_date}</td>
                                     <td>{a.appointment_time}</td>
-                                    <td><span className={`status-${(a.status || 'PENDING').toLowerCase()}`}>{a.status || 'PENDING'}</span></td>
+                                    <td><span className={`status-${a.status?.toLowerCase() || 'pending'}`}>{a.status || 'PENDING'}</span></td>
                                     <td><span className={a.payment_status === 'PAID' ? 'paid' : 'unpaid'}>{a.payment_status || 'UNPAID'}</span></td>
-                                    <td><button className="btn-success" onClick={() => downloadReceipt(a.appointment_id)}>Download CSV</button></td>
+                                    <td><button className="btn-success" onClick={() => downloadReceipt(a.appointment_id)}>📥 CSV</button></td>
                                 </tr>
-                            ))}</tbody>
+                            ))}
+                            </tbody>
                         </table>
                     </div>
                 )}
