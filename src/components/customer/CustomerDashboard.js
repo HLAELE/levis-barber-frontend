@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import API_URL from '../../apiConfig';
 
 function CustomerDashboard({ user, onLogout }) {
     const [myAppointments, setMyAppointments] = useState([]);
@@ -10,9 +11,6 @@ function CustomerDashboard({ user, onLogout }) {
     const [booking, setBooking] = useState({ custom_service: '', appointment_date: '', appointment_time: '', payment_method: 'CASH', amount: '' });
     const token = localStorage.getItem('token');
     
-    // Get API URL from environment variable or use default
-    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-
     const fetchData = async () => {
         try {
             const [apptsRes, complaintsRes] = await Promise.all([

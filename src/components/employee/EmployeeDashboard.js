@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import API_URL from '../../apiConfig';
 
 function EmployeeDashboard({ user, onLogout }) {
     const [appointments, setAppointments] = useState([]);
@@ -14,7 +15,6 @@ function EmployeeDashboard({ user, onLogout }) {
 
     const token = localStorage.getItem('token');
     const employeeId = user?.userId;
-    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
     const fetchData = async () => {
         if (!token) {

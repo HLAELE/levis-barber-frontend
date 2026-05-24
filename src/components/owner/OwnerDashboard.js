@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import API_URL from '../../apiConfig';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 function OwnerDashboard({ user, onLogout }) {
@@ -21,49 +22,48 @@ function OwnerDashboard({ user, onLogout }) {
     const [incomeData, setIncomeData] = useState({ amount: '', source: '', description: '', category: 'Other', payment_method: 'CASH' });
 
     const token = localStorage.getItem('token');
-    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
     const fetchDashboard = useCallback(async () => {
         try {
             const res = await axios.get(`${API_URL}/owner/dashboard`, { headers: { Authorization: `Bearer ${token}` } });
             setStats(res.data);
         } catch (error) { console.error(error); }
-    }, [API_URL, token]);
+    }, [token]);
 
     const fetchChartData = useCallback(async () => {
         try {
             const res = await axios.get(`${API_URL}/owner/chart-data`, { headers: { Authorization: `Bearer ${token}` } });
             setChartData(res.data);
         } catch (error) { console.error(error); }
-    }, [API_URL, token]);
+    }, [token]);
 
     const fetchPendingEmployees = useCallback(async () => {
         try {
             const res = await axios.get(`${API_URL}/owner/pending-employees`, { headers: { Authorization: `Bearer ${token}` } });
             setPendingEmployees(res.data);
         } catch (error) { console.error(error); }
-    }, [API_URL, token]);
+    }, [token]);
 
     const fetchEmployees = useCallback(async () => {
         try {
             const res = await axios.get(`${API_URL}/owner/employees`, { headers: { Authorization: `Bearer ${token}` } });
             setEmployees(res.data);
         } catch (error) { console.error(error); }
-    }, [API_URL, token]);
+    }, [token]);
 
     const fetchIncome = useCallback(async () => {
         try {
             const res = await axios.get(`${API_URL}/owner/income`, { headers: { Authorization: `Bearer ${token}` } });
             setIncome(res.data);
         } catch (error) { console.error(error); }
-    }, [API_URL, token]);
+    }, [token]);
 
     const fetchComplaints = useCallback(async () => {
         try {
             const res = await axios.get(`${API_URL}/owner/complaints`, { headers: { Authorization: `Bearer ${token}` } });
             setComplaints(res.data);
         } catch (error) { console.error(error); }
-    }, [API_URL, token]);
+    }, [token]);
 
     const approveEmployee = async (userId) => {
         try {
