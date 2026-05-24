@@ -21,52 +21,53 @@ function OwnerDashboard({ user, onLogout }) {
     const [incomeData, setIncomeData] = useState({ amount: '', source: '', description: '', category: 'Other', payment_method: 'CASH' });
 
     const token = localStorage.getItem('token');
+    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
     const fetchDashboard = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/owner/dashboard', { headers: { Authorization: `Bearer ${token}` } });
+            const res = await axios.get(`${API_URL}/owner/dashboard`, { headers: { Authorization: `Bearer ${token}` } });
             setStats(res.data);
         } catch (error) { console.error(error); }
     };
 
     const fetchChartData = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/owner/chart-data', { headers: { Authorization: `Bearer ${token}` } });
+            const res = await axios.get(`${API_URL}/owner/chart-data`, { headers: { Authorization: `Bearer ${token}` } });
             setChartData(res.data);
         } catch (error) { console.error(error); }
     };
 
     const fetchPendingEmployees = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/owner/pending-employees', { headers: { Authorization: `Bearer ${token}` } });
+            const res = await axios.get(`${API_URL}/owner/pending-employees`, { headers: { Authorization: `Bearer ${token}` } });
             setPendingEmployees(res.data);
         } catch (error) { console.error(error); }
     };
 
     const fetchEmployees = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/owner/employees', { headers: { Authorization: `Bearer ${token}` } });
+            const res = await axios.get(`${API_URL}/owner/employees`, { headers: { Authorization: `Bearer ${token}` } });
             setEmployees(res.data);
         } catch (error) { console.error(error); }
     };
 
     const fetchIncome = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/owner/income', { headers: { Authorization: `Bearer ${token}` } });
+            const res = await axios.get(`${API_URL}/owner/income`, { headers: { Authorization: `Bearer ${token}` } });
             setIncome(res.data);
         } catch (error) { console.error(error); }
     };
 
     const fetchComplaints = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/owner/complaints', { headers: { Authorization: `Bearer ${token}` } });
+            const res = await axios.get(`${API_URL}/owner/complaints`, { headers: { Authorization: `Bearer ${token}` } });
             setComplaints(res.data);
         } catch (error) { console.error(error); }
     };
 
     const approveEmployee = async (userId) => {
         try {
-            await axios.post(`http://localhost:5000/api/owner/approve-employee/${userId}`, 
+            await axios.post(`${API_URL}/owner/approve-employee/${userId}`, 
                 { position: 'Barber', salary: 0, hire_date: new Date().toISOString().split('T')[0] },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -78,7 +79,7 @@ function OwnerDashboard({ user, onLogout }) {
     const rejectEmployee = async (userId) => {
         if (window.confirm('Are you sure you want to reject this employee registration?')) {
             try {
-                await axios.delete(`http://localhost:5000/api/owner/reject-employee/${userId}`, { headers: { Authorization: `Bearer ${token}` } });
+                await axios.delete(`${API_URL}/owner/reject-employee/${userId}`, { headers: { Authorization: `Bearer ${token}` } });
                 fetchPendingEmployees();
             } catch (error) { console.error(error); }
         }
@@ -87,7 +88,7 @@ function OwnerDashboard({ user, onLogout }) {
     const paySalary = async () => {
         if (!selectedEmployee || !salaryAmount) return;
         try {
-            await axios.post('http://localhost:5000/api/owner/pay-salary',
+            await axios.post(`${API_URL}/owner/pay-salary`,
                 { employee_id: selectedEmployee, amount: parseFloat(salaryAmount), description: 'Monthly salary' },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -103,7 +104,7 @@ function OwnerDashboard({ user, onLogout }) {
     const submitExpense = async () => {
         if (!expenseData.amount || !expenseData.category) return;
         try {
-            await axios.post('http://localhost:5000/api/owner/add-expense',
+            await axios.post(`${API_URL}/owner/add-expense`,
                 { amount: parseFloat(expenseData.amount), description: expenseData.description, category: expenseData.category },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -119,7 +120,7 @@ function OwnerDashboard({ user, onLogout }) {
 
     const replyComplaint = async (complaintId) => {
         try {
-            await axios.post(`http://localhost:5000/api/owner/reply-complaint/${complaintId}`,
+            await axios.post(`${API_URL}/owner/reply-complaint/${complaintId}`,
                 { reply: replyText[complaintId] },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -167,7 +168,7 @@ function OwnerDashboard({ user, onLogout }) {
             return;
         }
         try {
-            await axios.post('http://localhost:5000/api/owner/add-income',
+            await axios.post(`${API_URL}/owner/add-income`,
                 { amount: parseFloat(incomeData.amount), source: incomeData.source, description: incomeData.description, category: incomeData.category, payment_method: incomeData.payment_method },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

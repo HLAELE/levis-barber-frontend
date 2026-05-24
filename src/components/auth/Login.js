@@ -18,8 +18,9 @@ function Login({ onLogin }) {
         setError('');
 
         try {
+            const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
             if (isLogin) {
-                const response = await axios.post('http://localhost:5000/api/auth/login', { username, password });
+                const response = await axios.post(`${API_URL}/auth/login`, { username, password });
                 if (response.data.success) {
                     localStorage.setItem('token', response.data.token);
                     onLogin(response.data.user);
@@ -27,7 +28,7 @@ function Login({ onLogin }) {
                     setError('Invalid credentials');
                 }
             } else {
-                const response = await axios.post('http://localhost:5000/api/auth/register', {
+                const response = await axios.post(`${API_URL}/auth/register`, {
                     full_name: fullName, username, password, role, phone, email
                 });
                 if (response.data.success) {
