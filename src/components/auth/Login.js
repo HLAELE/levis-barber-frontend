@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import API_URL from '../../apiConfig';
 
-function Login({ onLogin }) {
+function Login({ onLogin, onBack }) {
     const [isLogin, setIsLogin] = useState(true);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -61,6 +61,12 @@ function Login({ onLogin }) {
                     <button className={`tab-btn ${isLogin ? 'active' : ''}`} onClick={() => setIsLogin(true)}>Login</button>
                     <button className={`tab-btn ${!isLogin ? 'active' : ''}`} onClick={() => setIsLogin(false)}>Register</button>
                 </div>
+
+                {onBack && (
+                    <button className="btn-success" type="button" onClick={onBack} style={{ marginBottom: '18px', width: '100%' }}>
+                        Back to Landing
+                    </button>
+                )}
 
                 {error && <div className="error-message">{error}</div>}
 
