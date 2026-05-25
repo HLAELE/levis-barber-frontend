@@ -7,8 +7,6 @@ function Login({ onLogin, onBack }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [fullName, setFullName] = useState('');
-    const [phone, setPhone] = useState('');
-    const [email, setEmail] = useState('');
     const [role, setRole] = useState('CUSTOMER');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -29,7 +27,7 @@ function Login({ onLogin, onBack }) {
                 }
             } else {
                 const response = await axios.post(`${API_URL}/auth/register`, {
-                    full_name: fullName, username, password, role, phone, email
+                    full_name: fullName, username, password, role
                 });
                 if (response.data.success) {
                     setError(response.data.message || 'Registration successful! Please login.');
@@ -37,8 +35,6 @@ function Login({ onLogin, onBack }) {
                     setFullName('');
                     setUsername('');
                     setPassword('');
-                    setPhone('');
-                    setEmail('');
                 } else {
                     setError(response.data.error || 'Registration failed');
                 }
@@ -74,8 +70,6 @@ function Login({ onLogin, onBack }) {
                     {!isLogin && (
                         <>
                             <input type="text" className="input-field" placeholder="Full Name" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
-                            <input type="text" className="input-field" placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
-                            <input type="email" className="input-field" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
                         </>
                     )}
                     <input type="text" className="input-field" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} required />
