@@ -87,7 +87,7 @@ function Login({ onLogin, onBack }) {
                     </button>
                 </form>
                 
-                {isLogin && <p className="demo-text">Demo: owner / owner123</p>}
+                
             </div>
         </div>
     );
