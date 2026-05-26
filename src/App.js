@@ -15,6 +15,7 @@ function App() {
     };
 
     const handleGoToDashboard = () => {
+        console.log('Going to dashboard...');
         setShowDashboard(true);
     };
 
@@ -22,11 +23,13 @@ function App() {
         setShowDashboard(false);
     };
 
-    if (!showDashboard) {
-        return <LandingPage onGoToDashboard={handleGoToDashboard} />;
+    // If showing dashboard, render OwnerDashboard
+    if (showDashboard) {
+        return <OwnerDashboard user={ownerUser} onLogout={handleLogout} />;
     }
 
-    return <OwnerDashboard user={ownerUser} onLogout={handleLogout} />;
+    // Otherwise show landing page
+    return <LandingPage onGoToDashboard={handleGoToDashboard} />;
 }
 
 export default App;
