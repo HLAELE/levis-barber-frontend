@@ -1,6 +1,7 @@
+
 import React from 'react';
 
-function LandingPage({ onGoToDashboard }) {
+function LandingPage({ onStart }) {
     return (
         <div className="landing-page">
             <div className="landing-content">
@@ -12,9 +13,7 @@ function LandingPage({ onGoToDashboard }) {
                         Designed for owners, employees, and customers who want a sharp digital experience without the clutter.
                     </p>
                     <div className="landing-actions">
-                        <button className="btn-orange" onClick={onGoToDashboard}>
-                            Go to Owner Dashboard
-                        </button>
+                        <button className="btn-orange" onClick={onStart}>Get Started</button>
                     </div>
                 </div>
                 <div className="landing-features">
