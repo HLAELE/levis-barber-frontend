@@ -61,7 +61,7 @@ function Login({ onLogin, onBack }) {
 
                 {onBack && (
                     <button className="btn-success" type="button" onClick={onBack} style={{ marginBottom: '18px', width: '100%' }}>
-                        ← Back to Landing
+                        Back to Landing
                     </button>
                 )}
 
@@ -85,8 +85,6 @@ function Login({ onLogin, onBack }) {
                         {loading ? 'Processing...' : (isLogin ? 'Login' : 'Register')}
                     </button>
                 </form>
-                
-                {isLogin && <p className="demo-text">Demo: owner / owner123</p>}
             </div>
         </div>
     );
