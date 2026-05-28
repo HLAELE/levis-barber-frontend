@@ -86,153 +86,154 @@ function EmployeeDashboard({ user, onLogout }) {
     }, []);
 
     if (loading) {
-        return <div style={{ padding: '20px', color: 'white', textAlign: 'center' }}>Loading Employee Dashboard...</div>;
+        return React.createElement('div', { style: { padding: '20px', color: 'white', textAlign: 'center' } }, 'Loading Employee Dashboard...');
     }
 
     const totalIncome = appointments.filter(a => a.payment_status === 'PAID').reduce((sum, a) => sum + (parseFloat(a.amount) || 0), 0);
 
-    return (
-        <div className="dashboard-container">
-            <div className="sidebar">
-                <div className="sidebar-logo">✂️ LEVIS.BARBER</div>
-                <div className="sidebar-nav">
-                    <button className={`nav-btn ${activeTab === 'appointments' ? 'active' : ''}`} onClick={() => setActiveTab('appointments')}>📅 Appointments</button>
-                    <button className={`nav-btn ${activeTab === 'payments' ? 'active' : ''}`} onClick={() => setActiveTab('payments')}>💰 Payments</button>
-                    <button className={`nav-btn ${activeTab === 'salary' ? 'active' : ''}`} onClick={() => setActiveTab('salary')}>💵 My Salary</button>
-                    <button className={`nav-btn ${activeTab === 'complaints' ? 'active' : ''}`} onClick={() => setActiveTab('complaints')}>📝 Complaints</button>
-                </div>
-                <div className="sidebar-footer">
-                    <div>✂️ {user?.full_name}</div>
-                    <button className="logout-btn" onClick={onLogout}>Logout</button>
-                </div>
-            </div>
+    // Helper function to create appointment table
+    const renderAppointmentsTab = () => {
+        if (appointments.length === 0) {
+            return React.createElement('p', null, 'No appointments yet. Customer bookings will appear here.');
+        }
+        
+        const rows = appointments.map(a => 
+            React.createElement('tr', { key: a.appointment_id },
+                React.createElement('td', null, a.customer_name || 'Unknown'),
+                React.createElement('td', null, a.custom_service || 'No description'),
+                React.createElement('td', null, a.appointment_date || 'N/A'),
+                React.createElement('td', null, a.appointment_time || 'N/A'),
+                React.createElement('td', null, React.createElement('span', { className: `status-${(a.status || 'PENDING').toLowerCase()}` }, a.status || 'PENDING')),
+                React.createElement('td', null, React.createElement('span', { className: a.payment_status === 'PAID' ? 'paid' : 'unpaid' }, a.payment_status || 'UNPAID')),
+                React.createElement('td', null, 
+                    (a.status !== 'COMPLETED' && a.status !== 'CANCELLED') ? 
+                        React.createElement('div', { style: { display: 'flex', gap: '5px' } },
+                            React.createElement('button', { className: 'btn-success', onClick: () => updateStatus(a.appointment_id, 'COMPLETED') }, 'Complete'),
+                            React.createElement('button', { className: 'btn-danger', onClick: () => updateStatus(a.appointment_id, 'CANCELLED') }, 'Decline')
+                        ) : null
+                )
+            )
+        );
+        
+        return React.createElement('div', { style: { overflowX: 'auto' } },
+            React.createElement('table', { className: 'data-table' },
+                React.createElement('thead', null,
+                    React.createElement('tr', null,
+                        React.createElement('th', null, 'Customer'),
+                        React.createElement('th', null, 'Service'),
+                        React.createElement('th', null, 'Date'),
+                        React.createElement('th', null, 'Time'),
+                        React.createElement('th', null, 'Status'),
+                        React.createElement('th', null, 'Payment'),
+                        React.createElement('th', null, 'Actions')
+                    )
+                ),
+                React.createElement('tbody', null, rows)
+            )
+        );
+    };
 
-            <div className="main-content">
-                {activeTab === 'appointments' && (
-                    <div>
-                        <h2>My Appointments</h2>
-                        <button className="btn-orange" onClick={fetchData} style={{ marginBottom: '20px' }}>🔄 Refresh</button>
-                        {appointments.length === 0 && <p>No appointments yet. Customer bookings will appear here.</p>}
-                        {appointments.length > 0 && (
-                            <table className="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>Customer</th>
-                                        <th>Service</th>
-                                        <th>Date</th>
-                                        <th>Time</th>
-                                        <th>Status</th>
-                                        <th>Payment</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {appointments.map((a) => (
-                                        <tr key={a.appointment_id}>
-                                            <td>{a.customer_name || 'Unknown'}</td>
-                                            <td>{a.custom_service || 'No description'}</td>
-                                            <td>{a.appointment_date || 'N/A'}</td>
-                                            <td>{a.appointment_time || 'N/A'}</td>
-                                            <td>
-                                                <span className={`status-${(a.status || 'PENDING').toLowerCase()}`}>
-                                                    {a.status || 'PENDING'}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <span className={a.payment_status === 'PAID' ? 'paid' : 'unpaid'}>
-                                                    {a.payment_status || 'UNPAID'}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                {(a.status !== 'COMPLETED' && a.status !== 'CANCELLED') && (
-                                                    <div style={{ display: 'flex', gap: '5px' }}>
-                                                        <button className="btn-success" onClick={() => updateStatus(a.appointment_id, 'COMPLETED')}>Complete</button>
-                                                        <button className="btn-danger" onClick={() => updateStatus(a.appointment_id, 'CANCELLED')}>Decline</button>
-                                                    </div>
-                                                )}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        )}
-                    </div>
-                )}
+    const renderPaymentsTab = () => {
+        const paidAppointments = appointments.filter(a => a.payment_status === 'PAID');
+        if (paidAppointments.length === 0) {
+            return React.createElement('p', null, 'No payments received yet.');
+        }
+        
+        const rows = paidAppointments.map(a => 
+            React.createElement('tr', { key: a.appointment_id },
+                React.createElement('td', null, a.customer_name),
+                React.createElement('td', null, `M ${parseFloat(a.amount).toLocaleString()}`),
+                React.createElement('td', null, a.payment_method || 'CASH'),
+                React.createElement('td', null, a.appointment_date)
+            )
+        );
+        
+        return React.createElement('table', { className: 'data-table' },
+            React.createElement('thead', null,
+                React.createElement('tr', null,
+                    React.createElement('th', null, 'Customer'),
+                    React.createElement('th', null, 'Amount (M)'),
+                    React.createElement('th', null, 'Method'),
+                    React.createElement('th', null, 'Date')
+                )
+            ),
+            React.createElement('tbody', null, rows)
+        );
+    };
 
-                {activeTab === 'payments' && (
-                    <div>
-                        <h2>Customer Payments</h2>
-                        <div className="stats-grid" style={{ gridTemplateColumns: '1fr' }}>
-                            <div className="stat-card">
-                                <div className="stat-icon">💰</div>
-                                <div className="stat-value">M {totalIncome.toLocaleString()}</div>
-                                <div>Total Income Received</div>
-                            </div>
-                        </div>
-                        {appointments.filter(a => a.payment_status === 'PAID').length === 0 && <p>No payments received yet.</p>}
-                        {appointments.filter(a => a.payment_status === 'PAID').length > 0 && (
-                            <table className="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>Customer</th>
-                                        <th>Amount (M)</th>
-                                        <th>Method</th>
-                                        <th>Date</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {appointments.filter(a => a.payment_status === 'PAID').map((a) => (
-                                        <tr key={a.appointment_id}>
-                                            <td>{a.customer_name}</td>
-                                            <td>M {parseFloat(a.amount).toLocaleString()}</td>
-                                            <td>{a.payment_method || 'CASH'}</td>
-                                            <td>{a.appointment_date}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        )}
-                    </div>
-                )}
+    const renderSalaryTab = () => {
+        return React.createElement('div', null,
+            React.createElement('div', { className: 'stats-grid', style: { gridTemplateColumns: '1fr' } },
+                React.createElement('div', { className: 'stat-card' },
+                    React.createElement('div', { className: 'stat-icon' }, '💰'),
+                    React.createElement('div', { className: 'stat-value' }, `M ${parseFloat(salary).toLocaleString()}`),
+                    React.createElement('div', null, 'Current Monthly Salary')
+                )
+            ),
+            React.createElement('button', { className: 'btn-orange', onClick: downloadSalary }, '📥 Download Salary Statement (CSV)')
+        );
+    };
 
-                {activeTab === 'salary' && (
-                    <div>
-                        <h2>My Salary</h2>
-                        <div className="stats-grid" style={{ gridTemplateColumns: '1fr' }}>
-                            <div className="stat-card">
-                                <div className="stat-icon">💵</div>
-                                <div className="stat-value">M {parseFloat(salary).toLocaleString()}</div>
-                                <div>Current Monthly Salary</div>
-                            </div>
-                        </div>
-                        <button className="btn-orange" onClick={downloadSalary}>📥 Download Salary Statement (CSV)</button>
-                    </div>
-                )}
+    const renderComplaintsTab = () => {
+        const complaintItems = complaints.map(c => 
+            React.createElement('div', { key: c.complaint_id, className: 'complaint-card' },
+                React.createElement('strong', null, c.subject),
+                React.createElement('p', null, c.message),
+                c.reply ? React.createElement('div', { className: 'reply-box' }, React.createElement('strong', null, 'Owner Reply: '), c.reply) : null
+            )
+        );
+        
+        return React.createElement('div', null,
+            React.createElement('input', { className: 'input-field', placeholder: 'Subject', value: complaintSubject, onChange: (e) => setComplaintSubject(e.target.value) }),
+            React.createElement('textarea', { className: 'input-field', placeholder: 'Message', rows: '4', value: complaintMessage, onChange: (e) => setComplaintMessage(e.target.value) }),
+            React.createElement('button', { className: 'btn-orange', onClick: sendComplaint }, 'Send Complaint'),
+            React.createElement('h2', { style: { marginTop: '30px' } }, 'My Complaints & Replies'),
+            complaintItems.length === 0 ? React.createElement('p', null, 'No complaints sent.') : complaintItems
+        );
+    };
 
-                {activeTab === 'complaints' && (
-                    <div>
-                        <h2>Send Complaint to Owner</h2>
-                        <input className="input-field" placeholder="Subject" value={complaintSubject} onChange={(e) => setComplaintSubject(e.target.value)} />
-                        <textarea className="input-field" placeholder="Message" rows="4" value={complaintMessage} onChange={(e) => setComplaintMessage(e.target.value)} />
-                        <button className="btn-orange" onClick={sendComplaint}>Send Complaint</button>
-                        <h2 style={{ marginTop: '30px' }}>My Complaints & Replies</h2>
-                        {complaints.length === 0 && <p>No complaints sent.</p>}
-                        {complaints.map((c) => (
-                            <div key={c.complaint_id} className="complaint-card">
-                                <strong>{c.subject}</strong>
-                                <p>{c.message}</p>
-                                {c.reply && (
-                                    <div className="reply-box">
-                                        <strong>Owner Reply:</strong> {c.reply}
-                                    </div>
-                                )}
-                                {!c.reply && <p style={{ color: '#ff9800', marginTop: '10px' }}>Awaiting owner reply...</p>}
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </div>
-        </div>
+    const renderContent = () => {
+        if (activeTab === 'appointments') {
+            return React.createElement('div', null,
+                React.createElement('h2', null, 'My Appointments'),
+                React.createElement('button', { className: 'btn-orange', onClick: fetchData, style: { marginBottom: '20px' } }, '🔄 Refresh'),
+                renderAppointmentsTab()
+            );
+        }
+        if (activeTab === 'payments') {
+            return React.createElement('div', null,
+                React.createElement('h2', null, 'Customer Payments'),
+                React.createElement('div', { className: 'stats-grid', style: { gridTemplateColumns: '1fr' } },
+                    React.createElement('div', { className: 'stat-card' },
+                        React.createElement('div', { className: 'stat-icon' }, '💰'),
+                        React.createElement('div', { className: 'stat-value' }, `M ${totalIncome.toLocaleString()}`),
+                        React.createElement('div', null, 'Total Income Received')
+                    )
+                ),
+                renderPaymentsTab()
+            );
+        }
+        if (activeTab === 'salary') {
+            return renderSalaryTab();
+        }
+        return renderComplaintsTab();
+    };
+
+    return React.createElement('div', { className: 'dashboard-container' },
+        React.createElement('div', { className: 'sidebar' },
+            React.createElement('div', { className: 'sidebar-logo' }, '✂️ LEVIS.BARBER'),
+            React.createElement('div', { className: 'sidebar-nav' },
+                React.createElement('button', { className: `nav-btn ${activeTab === 'appointments' ? 'active' : ''}`, onClick: () => setActiveTab('appointments') }, '📅 Appointments'),
+                React.createElement('button', { className: `nav-btn ${activeTab === 'payments' ? 'active' : ''}`, onClick: () => setActiveTab('payments') }, '💰 Payments'),
+                React.createElement('button', { className: `nav-btn ${activeTab === 'salary' ? 'active' : ''}`, onClick: () => setActiveTab('salary') }, '💵 My Salary'),
+                React.createElement('button', { className: `nav-btn ${activeTab === 'complaints' ? 'active' : ''}`, onClick: () => setActiveTab('complaints') }, '📝 Complaints')
+            ),
+            React.createElement('div', { className: 'sidebar-footer' },
+                React.createElement('div', null, `✂️ ${user?.full_name || 'Employee'}`),
+                React.createElement('button', { className: 'logout-btn', onClick: onLogout }, 'Logout')
+            )
+        ),
+        React.createElement('div', { className: 'main-content' }, renderContent())
     );
 }
 
