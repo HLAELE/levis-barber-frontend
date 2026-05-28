@@ -79,16 +79,16 @@ function OwnerDashboard({ user, onLogout }) {
                 { position: 'Barber', salary: 0, hire_date: new Date().toISOString().split('T')[0] },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            fetchPendingEmployees();
-            fetchEmployees();
+            await fetchPendingEmployees();
+            await fetchEmployees();
         } catch (error) { console.error(error); }
     };
 
     const rejectEmployee = async (userId) => {
-        if (window.confirm('Are you sure you want to reject this employee registration?')) {
+        if (window.confirm('Reject this employee registration?')) {
             try {
                 await axios.delete(`${API_URL}/owner/reject-employee/${userId}`, { headers: { Authorization: `Bearer ${token}` } });
-                fetchPendingEmployees();
+                await fetchPendingEmployees();
             } catch (error) { console.error(error); }
         }
     };
@@ -103,10 +103,10 @@ function OwnerDashboard({ user, onLogout }) {
             setSalaryAmount('');
             setSelectedEmployee(null);
             setShowSalaryModal(false);
-            fetchDashboard();
-            fetchChartData();
-            fetchEmployees();
-            fetchExpenses();
+            await fetchDashboard();
+            await fetchChartData();
+            await fetchEmployees();
+            await fetchExpenses();
             alert('Salary paid successfully!');
         } catch (error) { console.error(error); alert('Failed to pay salary'); }
     };
@@ -120,9 +120,9 @@ function OwnerDashboard({ user, onLogout }) {
             await axios.post(`${API_URL}/owner/add-income`, incomeData, { headers: { Authorization: `Bearer ${token}` } });
             setIncomeData({ source: '', amount: '', description: '', category: 'Other', payment_method: 'CASH', income_date: '' });
             setShowIncomeModal(false);
-            fetchIncome();
-            fetchDashboard();
-            fetchChartData();
+            await fetchIncome();
+            await fetchDashboard();
+            await fetchChartData();
             alert('Income added successfully!');
         } catch (error) { console.error(error); alert('Failed to add income'); }
     };
@@ -136,9 +136,9 @@ function OwnerDashboard({ user, onLogout }) {
             await axios.post(`${API_URL}/owner/add-expense`, expenseData, { headers: { Authorization: `Bearer ${token}` } });
             setExpenseData({ description: '', amount: '', category: 'Other', expense_date: '' });
             setShowExpenseModal(false);
-            fetchExpenses();
-            fetchDashboard();
-            fetchChartData();
+            await fetchExpenses();
+            await fetchDashboard();
+            await fetchChartData();
             alert('Expense added successfully!');
         } catch (error) { console.error(error); alert('Failed to add expense'); }
     };
@@ -147,9 +147,9 @@ function OwnerDashboard({ user, onLogout }) {
         if (window.confirm('Delete this income record?')) {
             try {
                 await axios.delete(`${API_URL}/owner/delete-income/${id}`, { headers: { Authorization: `Bearer ${token}` } });
-                fetchIncome();
-                fetchDashboard();
-                fetchChartData();
+                await fetchIncome();
+                await fetchDashboard();
+                await fetchChartData();
             } catch (error) { console.error(error); }
         }
     };
@@ -158,9 +158,9 @@ function OwnerDashboard({ user, onLogout }) {
         if (window.confirm('Delete this expense record?')) {
             try {
                 await axios.delete(`${API_URL}/owner/delete-expense/${id}`, { headers: { Authorization: `Bearer ${token}` } });
-                fetchExpenses();
-                fetchDashboard();
-                fetchChartData();
+                await fetchExpenses();
+                await fetchDashboard();
+                await fetchChartData();
             } catch (error) { console.error(error); }
         }
     };
@@ -175,7 +175,7 @@ function OwnerDashboard({ user, onLogout }) {
                 { reply: replyText[complaintId] },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            fetchComplaints();
+            await fetchComplaints();
             alert('Reply sent!');
         } catch (error) { console.error(error); }
     };
@@ -190,9 +190,9 @@ function OwnerDashboard({ user, onLogout }) {
         fetchComplaints();
     }, [fetchDashboard, fetchChartData, fetchIncome, fetchExpenses, fetchPendingEmployees, fetchEmployees, fetchComplaints]);
 
-    const totalIncome = incomeList.reduce((sum, i) => sum + parseFloat(i.amount || 0), 0);
+    const totalIncome = incomeList.reduce((sum, i) => sum + (parseFloat(i.amount) || 0), 0);
     const pieColors = ['#28a745', '#dc3545', '#ff6a00', '#17a2b8', '#ffc107', '#6f42c1'];
-    const pieData = chartData.categoryExpenses.map((c, i) => ({ name: c.category, value: parseFloat(c.total), color: pieColors[i % pieColors.length] }));
+    const pieData = (chartData.categoryExpenses || []).map((c, i) => ({ name: c.category, value: parseFloat(c.total) || 0, color: pieColors[i % pieColors.length] }));
 
     return (
         <div className="dashboard-container">
@@ -232,7 +232,7 @@ function OwnerDashboard({ user, onLogout }) {
                             <div className="chart-card">
                                 <h3>📈 Monthly Revenue Trend</h3>
                                 <ResponsiveContainer width="100%" height={300}>
-                                    <LineChart data={chartData.monthlyRevenue}>
+                                    <LineChart data={chartData.monthlyRevenue || []}>
                                         <CartesianGrid strokeDasharray="3 3" stroke="#333" />
                                         <XAxis dataKey="month" stroke="#ff6a00" />
                                         <YAxis stroke="#ff6a00" />
@@ -246,7 +246,7 @@ function OwnerDashboard({ user, onLogout }) {
                                 <h3>🥧 Expenses Breakdown</h3>
                                 <ResponsiveContainer width="100%" height={300}>
                                     <PieChart>
-                                        <Pie data={pieData} cx="50%" cy="50%" label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`} outerRadius={100} dataKey="value">
+                                        <Pie data={pieData} cx="50%" cy="50%" label={({ name, percent }) => `${name}: ${((percent || 0) * 100).toFixed(0)}%`} outerRadius={100} dataKey="value">
                                             {pieData.map((e, i) => (<Cell key={i} fill={e.color} />))}
                                         </Pie>
                                         <Tooltip formatter={(v) => `M ${v.toLocaleString()}`} />
@@ -257,7 +257,7 @@ function OwnerDashboard({ user, onLogout }) {
                             <div className="chart-card">
                                 <h3>📊 Revenue vs Expenses</h3>
                                 <ResponsiveContainer width="100%" height={300}>
-                                    <BarChart data={[{ name: 'Revenue', amount: chartData.revenueTotal }, { name: 'Expenses', amount: chartData.expensesTotal }]}>
+                                    <BarChart data={[{ name: 'Revenue', amount: chartData.revenueTotal || 0 }, { name: 'Expenses', amount: chartData.expensesTotal || 0 }]}>
                                         <CartesianGrid strokeDasharray="3 3" stroke="#333" />
                                         <XAxis dataKey="name" stroke="#ff6a00" />
                                         <YAxis stroke="#ff6a00" />
@@ -274,16 +274,42 @@ function OwnerDashboard({ user, onLogout }) {
                     <div>
                         <h2>Pending Employee Approvals</h2>
                         {pendingEmployees.length === 0 ? <p>No pending approvals</p> : (
-                            <table className="data-table"><thead><tr><th>Name</th><th>Username</th><th>Registered</th><th>Actions</th></tr></thead>
-                            <tbody>{pendingEmployees.map(emp => (<tr key={emp.user_id}><td>{emp.full_name}</td><td>{emp.username}</td><td>{new Date(emp.created_at).toLocaleDateString()}</td>}<td><button className="btn-success" onClick={() => approveEmployee(emp.user_id)}>Approve</button><button className="btn-danger" style={{ marginLeft: '10px' }} onClick={() => rejectEmployee(emp.user_id)}>Reject</button></td></tr>))}</tbody></table>)}
+                            <table className="data-table">
+                                <thead><tr><th>Name</th><th>Username</th><th>Registered</th><th>Actions</th></tr></thead>
+                                <tbody>
+                                    {pendingEmployees.map((emp) => (
+                                        <tr key={emp.user_id}>
+                                            <td>{emp.full_name}</td>
+                                            <td>{emp.username}</td>
+                                            <td>{new Date(emp.created_at).toLocaleDateString()}</td>
+                                            <td>
+                                                <button className="btn-success" onClick={() => approveEmployee(emp.user_id)}>Approve</button>
+                                                <button className="btn-danger" style={{ marginLeft: '10px' }} onClick={() => rejectEmployee(emp.user_id)}>Reject</button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
                     </div>
                 )}
 
                 {activeTab === 'employees' && (
                     <div>
                         <h2>Employees & Salary Management</h2>
-                        <table className="data-table"><thead><tr><th>Name</th><th>Position</th><th>Salary (M)</th><th>Action</th></tr></thead>
-                        <tbody>{employees.map(emp => (<tr key={emp.employee_id}><td>{emp.full_name}</td><td>{emp.position || 'Barber'}</td>}<td>M {parseFloat(emp.salary).toLocaleString()}</td><td><button className="btn-orange" onClick={() => { setSelectedEmployee(emp.employee_id); setSalaryAmount(emp.salary || 0); setShowSalaryModal(true); }}>Pay Salary</button></td></tr>))}</tbody></table>
+                        <table className="data-table">
+                            <thead><tr><th>Name</th><th>Position</th><th>Salary (M)</th><th>Action</th></tr></thead>
+                            <tbody>
+                                {employees.map((emp) => (
+                                    <tr key={emp.employee_id}>
+                                        <td>{emp.full_name}</td>
+                                        <td>{emp.position || 'Barber'}</td>
+                                        <td>M {parseFloat(emp.salary).toLocaleString()}</td>
+                                        <td><button className="btn-orange" onClick={() => { setSelectedEmployee(emp.employee_id); setSalaryAmount(emp.salary || 0); setShowSalaryModal(true); }}>Pay Salary</button></td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 )}
 
@@ -296,8 +322,21 @@ function OwnerDashboard({ user, onLogout }) {
                         <div className="stats-grid" style={{ gridTemplateColumns: '1fr' }}>
                             <div className="stat-card"><div className="stat-icon">💰</div><div className="stat-value">M {totalIncome.toLocaleString()}</div><div>Total Income</div></div>
                         </div>
-                        <table className="data-table"><thead><tr><th>Source</th><th>Amount (M)</th><th>Category</th><th>Method</th><th>Date</th><th>Action</th></tr></thead>
-                        <tbody>{incomeList.map(i => (<tr key={i.id}><td>{i.source}</td>}<td>M {parseFloat(i.amount).toLocaleString()}</td><td>{i.category}</td><td>{i.payment_method}</td><td>{new Date(i.date).toLocaleDateString()}</td><td><button className="btn-danger" onClick={() => deleteIncome(i.id)}>Delete</button></td></tr>))}</tbody><td>
+                        <table className="data-table">
+                            <thead><tr><th>Source</th><th>Amount (M)</th><th>Category</th><th>Method</th><th>Date</th><th>Action</th></tr></thead>
+                            <tbody>
+                                {incomeList.map((i) => (
+                                    <tr key={i.id}>
+                                        <td>{i.source}</td>
+                                        <td>M {parseFloat(i.amount).toLocaleString()}</td>
+                                        <td>{i.category}</td>
+                                        <td>{i.payment_method}</td>
+                                        <td>{new Date(i.date).toLocaleDateString()}</td>
+                                        <td><button className="btn-danger" onClick={() => deleteIncome(i.id)}>Delete</button></td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 )}
 
@@ -310,21 +349,38 @@ function OwnerDashboard({ user, onLogout }) {
                         <div className="stats-grid" style={{ gridTemplateColumns: '1fr' }}>
                             <div className="stat-card"><div className="stat-icon">📉</div><div className="stat-value">M {stats.totalExpenses.toLocaleString()}</div><div>Total Expenses</div></div>
                         </div>
-                        <table className="data-table"><thead><tr><th>Description</th><th>Amount (M)</th><th>Category</th><th>Date</th><th>Action</th></tr></thead>
-                        <tbody>{expensesList.map(e => (<tr key={e.id}><td>{e.description}</td>}<td>M {parseFloat(e.amount).toLocaleString()}</td><td>{e.category}</td><td>{new Date(e.date).toLocaleDateString()}</td><td><button className="btn-danger" onClick={() => deleteExpense(e.id)}>Delete</button></td></tr>))}</tbody></table>
+                        <table className="data-table">
+                            <thead><tr><th>Description</th><th>Amount (M)</th><th>Category</th><th>Date</th><th>Action</th></tr></thead>
+                            <tbody>
+                                {expensesList.map((e) => (
+                                    <tr key={e.id}>
+                                        <td>{e.description}</td>
+                                        <td>M {parseFloat(e.amount).toLocaleString()}</td>
+                                        <td>{e.category}</td>
+                                        <td>{new Date(e.date).toLocaleDateString()}</td>
+                                        <td><button className="btn-danger" onClick={() => deleteExpense(e.id)}>Delete</button></td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 )}
 
                 {activeTab === 'complaints' && (
                     <div>
                         <h2>Complaints</h2>
-                        {complaints.map(c => (
+                        {complaints.map((c) => (
                             <div key={c.complaint_id} className="complaint-card">
                                 <strong>{c.sender_name} ({c.role})</strong>
                                 <p><strong>{c.subject}</strong></p>
                                 <p>{c.message}</p>
-                                {c.reply ? <div className="reply-box"><strong>Reply:</strong> {c.reply}</div> : (
-                                    <div><textarea className="input-field" placeholder="Write reply..." onChange={(e) => setReplyText({ ...replyText, [c.complaint_id]: e.target.value })} /><button className="btn-orange" onClick={() => replyComplaint(c.complaint_id)}>Send Reply</button></div>
+                                {c.reply ? (
+                                    <div className="reply-box"><strong>Reply:</strong> {c.reply}</div>
+                                ) : (
+                                    <div>
+                                        <textarea className="input-field" placeholder="Write reply..." rows="3" onChange={(e) => setReplyText({ ...replyText, [c.complaint_id]: e.target.value })} />
+                                        <button className="btn-orange" onClick={() => replyComplaint(c.complaint_id)}>Send Reply</button>
+                                    </div>
                                 )}
                             </div>
                         ))}
@@ -334,46 +390,52 @@ function OwnerDashboard({ user, onLogout }) {
 
             {/* Income Modal */}
             {showIncomeModal && (
-                <div className="modal"><div className="modal-content">
-                    <h3>Add Manual Income</h3>
-                    <input type="text" className="input-field" placeholder="Source (e.g., Rental, Sponsorship)" value={incomeData.source} onChange={(e) => setIncomeData({ ...incomeData, source: e.target.value })} />
-                    <select className="input-field" value={incomeData.category} onChange={(e) => setIncomeData({ ...incomeData, category: e.target.value })}>
-                        <option>Services</option><option>Retail</option><option>Rental</option><option>Sponsorship</option><option>Other</option>
-                    </select>
-                    <select className="input-field" value={incomeData.payment_method} onChange={(e) => setIncomeData({ ...incomeData, payment_method: e.target.value })}>
-                        <option>CASH</option><option>CARD</option><option>MOBILE</option>
-                    </select>
-                    <input type="date" className="input-field" value={incomeData.income_date} onChange={(e) => setIncomeData({ ...incomeData, income_date: e.target.value })} />
-                    <input type="number" className="input-field" placeholder="Amount (M)" value={incomeData.amount} onChange={(e) => setIncomeData({ ...incomeData, amount: e.target.value })} />
-                    <input type="text" className="input-field" placeholder="Description (optional)" value={incomeData.description} onChange={(e) => setIncomeData({ ...incomeData, description: e.target.value })} />
-                    <button className="btn-orange" onClick={addIncome}>Save Income</button>
-                    <button className="btn-danger" onClick={() => setShowIncomeModal(false)}>Cancel</button>
-                </div></div>
+                <div className="modal">
+                    <div className="modal-content">
+                        <h3>Add Manual Income</h3>
+                        <input type="text" className="input-field" placeholder="Source (e.g., Rental, Sponsorship)" value={incomeData.source} onChange={(e) => setIncomeData({ ...incomeData, source: e.target.value })} />
+                        <select className="input-field" value={incomeData.category} onChange={(e) => setIncomeData({ ...incomeData, category: e.target.value })}>
+                            <option>Services</option><option>Retail</option><option>Rental</option><option>Sponsorship</option><option>Other</option>
+                        </select>
+                        <select className="input-field" value={incomeData.payment_method} onChange={(e) => setIncomeData({ ...incomeData, payment_method: e.target.value })}>
+                            <option>CASH</option><option>CARD</option><option>MOBILE</option>
+                        </select>
+                        <input type="date" className="input-field" value={incomeData.income_date} onChange={(e) => setIncomeData({ ...incomeData, income_date: e.target.value })} />
+                        <input type="number" className="input-field" placeholder="Amount (M)" value={incomeData.amount} onChange={(e) => setIncomeData({ ...incomeData, amount: e.target.value })} />
+                        <input type="text" className="input-field" placeholder="Description (optional)" value={incomeData.description} onChange={(e) => setIncomeData({ ...incomeData, description: e.target.value })} />
+                        <button className="btn-orange" onClick={addIncome}>Save Income</button>
+                        <button className="btn-danger" onClick={() => setShowIncomeModal(false)}>Cancel</button>
+                    </div>
+                </div>
             )}
 
             {/* Expense Modal */}
             {showExpenseModal && (
-                <div className="modal"><div className="modal-content">
-                    <h3>Add Expense</h3>
-                    <input type="text" className="input-field" placeholder="Description" value={expenseData.description} onChange={(e) => setExpenseData({ ...expenseData, description: e.target.value })} />
-                    <select className="input-field" value={expenseData.category} onChange={(e) => setExpenseData({ ...expenseData, category: e.target.value })}>
-                        <option>Rent</option><option>Equipment</option><option>Supplies</option><option>Salary</option><option>Other</option>
-                    </select>
-                    <input type="date" className="input-field" value={expenseData.expense_date} onChange={(e) => setExpenseData({ ...expenseData, expense_date: e.target.value })} />
-                    <input type="number" className="input-field" placeholder="Amount (M)" value={expenseData.amount} onChange={(e) => setExpenseData({ ...expenseData, amount: e.target.value })} />
-                    <button className="btn-danger" onClick={addExpense}>Save Expense</button>
-                    <button className="btn-success" onClick={() => setShowExpenseModal(false)}>Cancel</button>
-                </div></div>
+                <div className="modal">
+                    <div className="modal-content">
+                        <h3>Add Expense</h3>
+                        <input type="text" className="input-field" placeholder="Description" value={expenseData.description} onChange={(e) => setExpenseData({ ...expenseData, description: e.target.value })} />
+                        <select className="input-field" value={expenseData.category} onChange={(e) => setExpenseData({ ...expenseData, category: e.target.value })}>
+                            <option>Rent</option><option>Equipment</option><option>Supplies</option><option>Salary</option><option>Other</option>
+                        </select>
+                        <input type="date" className="input-field" value={expenseData.expense_date} onChange={(e) => setExpenseData({ ...expenseData, expense_date: e.target.value })} />
+                        <input type="number" className="input-field" placeholder="Amount (M)" value={expenseData.amount} onChange={(e) => setExpenseData({ ...expenseData, amount: e.target.value })} />
+                        <button className="btn-danger" onClick={addExpense}>Save Expense</button>
+                        <button className="btn-success" onClick={() => setShowExpenseModal(false)}>Cancel</button>
+                    </div>
+                </div>
             )}
 
             {/* Salary Modal */}
             {showSalaryModal && (
-                <div className="modal"><div className="modal-content">
-                    <h3>Pay Salary</h3>
-                    <input type="number" className="input-field" placeholder="Amount (M)" value={salaryAmount} onChange={(e) => setSalaryAmount(e.target.value)} />
-                    <button className="btn-orange" onClick={paySalary}>Confirm Payment</button>
-                    <button className="btn-danger" onClick={() => setShowSalaryModal(false)}>Cancel</button>
-                </div></div>
+                <div className="modal">
+                    <div className="modal-content">
+                        <h3>Pay Salary</h3>
+                        <input type="number" className="input-field" placeholder="Amount (M)" value={salaryAmount} onChange={(e) => setSalaryAmount(e.target.value)} />
+                        <button className="btn-orange" onClick={paySalary}>Confirm Payment</button>
+                        <button className="btn-danger" onClick={() => setShowSalaryModal(false)}>Cancel</button>
+                    </div>
+                </div>
             )}
         </div>
     );

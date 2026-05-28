@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import LandingPage from './components/LandingPage';
+import Login from './components/auth/Login';
 import OwnerDashboard from './components/owner/OwnerDashboard';
 import EmployeeDashboard from './components/employee/EmployeeDashboard';
 import CustomerDashboard from './components/customer/CustomerDashboard';
@@ -8,6 +9,7 @@ import './App.css';
 function App() {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [showLogin, setShowLogin] = useState(false);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -20,11 +22,12 @@ function App() {
         setLoading(false);
     }, []);
 
-    const handleLogin = (userData) => setUser(userData);
-    const handleLogout = () => { localStorage.removeItem('token'); setUser(null); };
+    const handleLogin = (userData) => { setUser(userData); setShowLogin(false); };
+    const handleLogout = () => { localStorage.removeItem('token'); setUser(null); setShowLogin(false); };
 
     if (loading) return <div className="login-container"><div className="login-card"><h2>Loading...</h2></div></div>;
-    if (!user) return <LandingPage onStart={() => {}} />;
+    if (!user && !showLogin) return <LandingPage onStart={() => setShowLogin(true)} />;
+    if (!user) return <Login onLogin={handleLogin} onBack={() => setShowLogin(false)} />;
     if (user.role === 'OWNER') return <OwnerDashboard user={user} onLogout={handleLogout} />;
     if (user.role === 'EMPLOYEE') return <EmployeeDashboard user={user} onLogout={handleLogout} />;
     return <CustomerDashboard user={user} onLogout={handleLogout} />;

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import API_URL from '../../apiConfig';
+
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 function Login({ onLogin, onBack }) {
     const [isLogin, setIsLogin] = useState(true);
@@ -60,7 +61,7 @@ function Login({ onLogin, onBack }) {
 
                 {onBack && (
                     <button className="btn-success" type="button" onClick={onBack} style={{ marginBottom: '18px', width: '100%' }}>
-                        Back to Landing
+                        ← Back to Landing
                     </button>
                 )}
 
@@ -68,9 +69,7 @@ function Login({ onLogin, onBack }) {
 
                 <form onSubmit={handleSubmit}>
                     {!isLogin && (
-                        <>
-                            <input type="text" className="input-field" placeholder="Full Name" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
-                        </>
+                        <input type="text" className="input-field" placeholder="Full Name" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
                     )}
                     <input type="text" className="input-field" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} required />
                     <input type="password" className="input-field" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
@@ -87,7 +86,7 @@ function Login({ onLogin, onBack }) {
                     </button>
                 </form>
                 
-                
+                {isLogin && <p className="demo-text">Demo: owner / owner123</p>}
             </div>
         </div>
     );
