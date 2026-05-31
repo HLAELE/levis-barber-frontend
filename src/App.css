@@ -128,71 +128,21 @@ body {
   display: flex;
   justify-content: center;
 }
-
-.hero-card {
+.contact-card {
   width: 100%;
   max-width: 420px;
-  padding: 30px;
-  border-radius: 30px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 182, 0, 0.16);
-  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.28);
-  backdrop-filter: blur(18px);
+  padding: 28px;
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255, 182, 0, 0.12);
+  box-shadow: 0 24px 40px rgba(0, 0, 0, 0.36);
+  backdrop-filter: blur(12px);
 }
 
-.hero-card-top {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  align-items: center;
-  margin-bottom: 24px;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.chip {
-  background: rgba(255, 182, 0, 0.12);
-  color: #ffb600;
-  font-size: 0.78rem;
-  padding: 10px 14px;
-  border-radius: 999px;
-}
-
-.hero-card h3 {
-  font-size: 1.45rem;
-  margin-bottom: 24px;
-  color: #ffffff;
-}
-
-.hero-card-row {
-  display: grid;
-  gap: 16px;
-  margin-bottom: 26px;
-}
-
-.hero-card-row div {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 12px;
-  padding: 18px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.hero-card-row strong {
-  font-size: 1.1rem;
-  color: #ffffff;
-}
-
-.hero-card-row span {
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 0.95rem;
-}
-
-.hero-card-footer {
-  color: rgba(255, 255, 255, 0.75);
-  font-size: 0.95rem;
-  line-height: 1.7;
-}
+.contact-card h3 { margin-bottom: 12px; }
+.contact-line { color: rgba(255,255,255,0.85); margin: 8px 0; }
+.contact-line a { color: #ffb600; text-decoration: none; }
+.contact-cta { display:flex; gap:10px; margin-top:14px; }
 
 .landing-feature-grid {
   display: grid;

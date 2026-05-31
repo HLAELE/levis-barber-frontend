@@ -14,107 +14,100 @@ function LandingPage({ onStart }) {
             <main className="landing-main">
                 <section className="hero">
                     <div className="hero-copy">
-                        <span className="eyebrow">Barbershop management reinvented</span>
-                        <h1>Run your shop with confidence, speed, and style.</h1>
+                        <span className="eyebrow">Barbershop experience</span>
+                        <h1>Sharp style, easy bookings, happy customers.</h1>
                         <p>
-                            LEVIS.BARBER brings appointment booking, financial tracking, and staff approvals into one premium dashboard.
-                            Designed to help owners, employees, and customers move faster while keeping every detail polished.
+                            Book appointments quickly, get timely reminders, and enjoy a professional service every visit. LEVIS.BARBER focuses on what matters to your customers — speed, clarity, and convenience.
                         </p>
                         <div className="landing-actions">
-                            <button className="btn-orange" onClick={onStart}>Start Free</button>
-                            <button className="btn-link" onClick={() => document.getElementById('features').scrollIntoView({ behavior: 'smooth' })}>Explore Features</button>
+                            <button className="btn-orange" onClick={onStart}>Book Now</button>
+                            <button className="btn-link" onClick={() => document.getElementById('features').scrollIntoView({ behavior: 'smooth' })}>See Services</button>
                         </div>
                     </div>
 
                     <div className="hero-visual">
-                        <div className="hero-card">
-                            <div className="hero-card-top">
-                                <span>Owner dashboard</span>
-                                <span className="chip">Live insights</span>
+                        <div className="contact-card">
+                            <h3>Get in touch</h3>
+                            <p className="contact-line">Call: <a href="tel:+63405086">+63405086</a></p>
+                            <p className="contact-line">WhatsApp: <a href="https://wa.me/63405086" target="_blank" rel="noreferrer">+63405086</a> / <a href="https://wa.me/59921347" target="_blank" rel="noreferrer">+59921347</a></p>
+                            <p className="contact-line">Facebook: <a href="https://www.facebook.com/LEVIS.BARBER" target="_blank" rel="noreferrer">LEVIS.BARBER</a></p>
+                            <p className="contact-line">Address: 123 Main Street, City — Open daily 8am–6pm</p>
+                            <div className="contact-cta">
+                                <button className="btn-orange" onClick={() => window.location = 'tel:+63405086'}>Call Now</button>
+                                <button className="btn-link" onClick={() => window.open('https://wa.me/63405086', '_blank')}>Open WhatsApp</button>
                             </div>
-                            <h3>Clear revenue & expense control</h3>
-                            <div className="hero-card-row">
-                                <div>
-                                    <strong>M 287,420</strong>
-                                    <span>Total revenue</span>
-                                </div>
-                                <div>
-                                    <strong>M 47,180</strong>
-                                    <span>Expenses</span>
-                                </div>
-                            </div>
-                            <div className="hero-card-footer">Quickly approve staff, add income, and review monthly charts—all in one place.</div>
                         </div>
                     </div>
                 </section>
 
                 <section className="landing-feature-grid" id="features">
                     <div className="feature-panel">
-                        <h2>Everything you need, nothing you don’t</h2>
-                        <p>Designed for salons and barbershops that want a premium, modern workflow without the complexity.</p>
+                        <h2>What customers love</h2>
+                        <p>Fast bookings, clear receipts, and friendly staff—experience a premium visit every time.</p>
                     </div>
                     <div className="feature-card-large">
-                        <h3>Owner analytics</h3>
-                        <p>Monitor revenue, expenses, profits, and customer growth from a clean central dashboard.</p>
+                        <h3>Quick bookings</h3>
+                        <p>Reserve a slot in seconds and get confirmation right away.</p>
                     </div>
                     <div className="feature-card-large">
-                        <h3>Workflow for employees</h3>
-                        <p>Employees can manage appointments, update status, and access salary records with ease.</p>
+                        <h3>Reliable service</h3>
+                        <p>Appointments honored, professionals ready — enjoy consistent quality.</p>
                     </div>
                     <div className="feature-card-large">
-                        <h3>Customer convenience</h3>
-                        <p>Customers book appointments, download receipts, and send feedback without friction.</p>
+                        <h3>Easy receipts</h3>
+                        <p>Download receipts and records immediately after payment.</p>
                     </div>
                 </section>
 
                 <section className="landing-stats">
                     <div>
-                        <span>Proven performance</span>
-                        <h2>Save time and keep your business moving.</h2>
+                        <span>Why choose us</span>
+                        <h2>Comfort, speed, and style in every visit.</h2>
                     </div>
                     <div className="stats-grid">
                         <div className="stat-block">
-                            <strong>24/7</strong>
-                            <p>Access the dashboard anytime from any device.</p>
+                            <strong>Fast</strong>
+                            <p>Short wait times and efficient service.</p>
                         </div>
                         <div className="stat-block">
-                            <strong>95%</strong>
-                            <p>Approval confidence for employee onboarding and payroll.</p>
+                            <strong>Friendly</strong>
+                            <p>Experienced barbers who listen and deliver.</p>
                         </div>
                         <div className="stat-block">
-                            <strong>3x</strong>
-                            <p>Faster bookkeeping and appointment management for teams.</p>
+                            <strong>Trusted</strong>
+                            <p>Clear receipts and reliable booking confirmation.</p>
                         </div>
                     </div>
                 </section>
 
                 <section className="landing-focus">
                     <div className="focus-copy">
-                        <h2>Professional tools for modern barbershops</h2>
-                        <p>From staff approvals to financial summaries, LEVIS.BARBER gives your business the premium experience your customers expect.</p>
+                        <h2>Visit or contact us</h2>
+                        <p>Walk in or book ahead — we’re ready to give you a standout experience.</p>
                     </div>
                     <div className="focus-list">
                         <div>
-                            <h3>Smart approvals</h3>
-                            <p>Approve or reject employee accounts quickly with built-in onboarding controls.</p>
+                            <h3>Call or WhatsApp</h3>
+                            <p>Phone: +63405086 | +59921347 — available for bookings and enquiries.</p>
                         </div>
                         <div>
-                            <h3>Financial clarity</h3>
-                            <p>Track revenue, income, and expenses with consistent reports and clean totals.</p>
+                            <h3>Follow us</h3>
+                            <p>Facebook: LEVIS.BARBER — updates, offers and community posts.</p>
                         </div>
                         <div>
-                            <h3>Fast booking</h3>
-                            <p>Customers can reserve services and download receipts from a modern interface.</p>
+                            <h3>Our location</h3>
+                            <p>123 Main Street, City — Open daily 8am–6pm.</p>
                         </div>
                     </div>
                 </section>
             </main>
 
             <footer className="landing-footer">
-                <span>© 2026 LEVIS.BARBER</span>
-                <div className="footer-links">
-                    <button onClick={() => document.getElementById('features').scrollIntoView({ behavior: 'smooth' })}>Features</button>
-                    <button onClick={onStart}>Login</button>
+                <div>© 2026 LEVIS.BARBER</div>
+                <div className="footer-contacts">
+                    <div>Call: <a href="tel:+63405086">+63405086</a></div>
+                    <div>WhatsApp: <a href="https://wa.me/63405086" target="_blank" rel="noreferrer">+63405086</a></div>
+                    <div>Facebook: LEVIS.BARBER</div>
                 </div>
             </footer>
         </div>
