@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import logoImage from '../../assets/levis-logo.svg';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
@@ -77,14 +78,14 @@ function EmployeeDashboard({ user, onLogout }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => { fetchData(); }, []);
 
-    if (loading) return <div className="dashboard-container"><div className="sidebar"><div className="sidebar-logo">✂️ LEVIS.BARBER</div></div><div className="main-content"><h2>Loading...</h2></div></div>;
+    if (loading) return <div className="dashboard-container"><div className="sidebar"><div className="sidebar-logo"><img src={logoImage} alt="Levis Barber Logo" /></div></div><div className="main-content"><h2>Loading...</h2></div></div>;
 
     const totalIncome = appointments.filter(a => a.payment_status === 'PAID').reduce((sum, a) => sum + (parseFloat(a.amount) || 0), 0);
 
     return (
         <div className="dashboard-container">
             <div className="sidebar">
-                <div className="sidebar-logo">✂️ LEVIS.BARBER</div>
+                <div className="sidebar-logo"><img src={logoImage} alt="Levis Barber Logo" /></div>
                 <div className="sidebar-nav">
                     <button className={`nav-btn ${activeTab === 'appointments' ? 'active' : ''}`} onClick={() => setActiveTab('appointments')}>📅 Appointments</button>
                     <button className={`nav-btn ${activeTab === 'payments' ? 'active' : ''}`} onClick={() => setActiveTab('payments')}>💰 Payments</button>

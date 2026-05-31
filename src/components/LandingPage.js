@@ -1,11 +1,13 @@
 
 import React from 'react';
+import logoImage from '../assets/levis-logo.svg';
 
 function LandingPage({ onStart }) {
     return (
         <div className="landing-page">
             <div className="landing-content">
                 <div className="landing-copy">
+                    <div className="landing-logo"><img src={logoImage} alt="Levis Barber Logo" /></div>
                     <p className="eyebrow">LEVIS.BARBER</p>
                     <h1>Modern barbershop management built for speed and clarity.</h1>
                     <p className="landing-text">

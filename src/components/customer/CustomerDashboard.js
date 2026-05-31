@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import logoImage from '../../assets/levis-logo.svg';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
@@ -87,7 +88,7 @@ function CustomerDashboard({ user, onLogout }) {
     return (
         <div className="dashboard-container">
             <div className="sidebar">
-                <div className="sidebar-logo">💈 LEVIS.BARBER</div>
+                <div className="sidebar-logo"><img src={logoImage} alt="Levis Barber Logo" /></div>
                 <div className="sidebar-nav">
                     <button className={`nav-btn ${activeTab === 'book' ? 'active' : ''}`} onClick={() => setActiveTab('book')}>📅 Book Appointment</button>
                     <button className={`nav-btn ${activeTab === 'appointments' ? 'active' : ''}`} onClick={() => setActiveTab('appointments')}>📋 My Appointments</button>
