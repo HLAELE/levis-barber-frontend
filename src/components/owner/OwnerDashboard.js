@@ -27,15 +27,30 @@ function OwnerDashboard({ user, onLogout }) {
     const fetchDashboard = useCallback(async () => {
         try {
             const res = await axios.get(`${API_URL}/owner/dashboard`, { headers: { Authorization: `Bearer ${token}` } });
-            setStats(res.data);
-        } catch (error) { console.error(error); }
+            if (res.data && !res.data.error) {
+                setStats({
+                    totalRevenue: res.data.totalRevenue || 0,
+                    totalExpenses: res.data.totalExpenses || 0,
+                    netProfit: res.data.netProfit || 0,
+                    totalCustomers: res.data.totalCustomers || 0
+                });
+            }
+        } catch (error) { console.error('Dashboard fetch error:', error); }
     }, [token]);
 
     const fetchChartData = useCallback(async () => {
         try {
             const res = await axios.get(`${API_URL}/owner/chart-data`, { headers: { Authorization: `Bearer ${token}` } });
-            setChartData(res.data);
-        } catch (error) { console.error(error); }
+            if (res.data && !res.data.error) {
+                setChartData({
+                    monthlyRevenue: res.data.monthlyRevenue || [],
+                    revenueTotal: res.data.revenueTotal || 0,
+                    expensesTotal: res.data.expensesTotal || 0,
+                    salariesTotal: res.data.salariesTotal || 0,
+                    categoryExpenses: res.data.categoryExpenses || []
+                });
+            }
+        } catch (error) { console.error('Chart data fetch error:', error); }
     }, [token]);
 
     const fetchIncome = useCallback(async () => {
@@ -223,10 +238,10 @@ function OwnerDashboard({ user, onLogout }) {
                             </div>
                         </div>
                         <div className="stats-grid">
-                            <div className="stat-card"><div className="stat-icon">💰</div><div className="stat-value">M {stats.totalRevenue.toLocaleString()}</div><div>Total Revenue</div></div>
-                            <div className="stat-card"><div className="stat-icon">📉</div><div className="stat-value">M {stats.totalExpenses.toLocaleString()}</div><div>Total Expenses</div></div>
-                            <div className="stat-card"><div className="stat-icon">📈</div><div className="stat-value" style={{ color: stats.netProfit >= 0 ? '#4caf50' : '#f44336' }}>M {stats.netProfit.toLocaleString()}</div><div>Net Profit</div></div>
-                            <div className="stat-card"><div className="stat-icon">👥</div><div className="stat-value">{stats.totalCustomers}</div><div>Total Customers</div></div>
+                            <div className="stat-card"><div className="stat-icon">💰</div><div className="stat-value">M {(stats.totalRevenue || 0).toLocaleString()}</div><div>Total Revenue</div></div>
+                            <div className="stat-card"><div className="stat-icon">📉</div><div className="stat-value">M {(stats.totalExpenses || 0).toLocaleString()}</div><div>Total Expenses</div></div>
+                            <div className="stat-card"><div className="stat-icon">📈</div><div className="stat-value" style={{ color: (stats.netProfit || 0) >= 0 ? '#4caf50' : '#f44336' }}>M {(stats.netProfit || 0).toLocaleString()}</div><div>Net Profit</div></div>
+                            <div className="stat-card"><div className="stat-icon">👥</div><div className="stat-value">{stats.totalCustomers || 0}</div><div>Total Customers</div></div>
                         </div>
                         <div className="charts-grid">
                             <div className="chart-card">
@@ -236,7 +251,7 @@ function OwnerDashboard({ user, onLogout }) {
                                         <CartesianGrid strokeDasharray="3 3" stroke="#333" />
                                         <XAxis dataKey="month" stroke="#ff6a00" />
                                         <YAxis stroke="#ff6a00" />
-                                        <Tooltip formatter={(v) => `M ${v.toLocaleString()}`} />
+                                        <Tooltip formatter={(v) => `M ${(v || 0).toLocaleString()}`} />
                                         <Legend />
                                         <Line type="monotone" dataKey="revenue" stroke="#ff6a00" strokeWidth={3} />
                                     </LineChart>
@@ -249,7 +264,7 @@ function OwnerDashboard({ user, onLogout }) {
                                         <Pie data={pieData} cx="50%" cy="50%" label={({ name, percent }) => `${name}: ${((percent || 0) * 100).toFixed(0)}%`} outerRadius={100} dataKey="value">
                                             {pieData.map((e, i) => (<Cell key={i} fill={e.color} />))}
                                         </Pie>
-                                        <Tooltip formatter={(v) => `M ${v.toLocaleString()}`} />
+                                        <Tooltip formatter={(v) => `M ${(v || 0).toLocaleString()}`} />
                                         <Legend />
                                     </PieChart>
                                 </ResponsiveContainer>
@@ -261,7 +276,7 @@ function OwnerDashboard({ user, onLogout }) {
                                         <CartesianGrid strokeDasharray="3 3" stroke="#333" />
                                         <XAxis dataKey="name" stroke="#ff6a00" />
                                         <YAxis stroke="#ff6a00" />
-                                        <Tooltip formatter={(v) => `M ${v.toLocaleString()}`} />
+                                        <Tooltip formatter={(v) => `M ${(v || 0).toLocaleString()}`} />
                                         <Bar dataKey="amount" fill="#ff6a00" radius={[8, 8, 0, 0]} />
                                     </BarChart>
                                 </ResponsiveContainer>
@@ -347,7 +362,7 @@ function OwnerDashboard({ user, onLogout }) {
                             <button className="btn-danger" onClick={() => setShowExpenseModal(true)}>+ Add Expense</button>
                         </div>
                         <div className="stats-grid" style={{ gridTemplateColumns: '1fr' }}>
-                            <div className="stat-card"><div className="stat-icon">📉</div><div className="stat-value">M {stats.totalExpenses.toLocaleString()}</div><div>Total Expenses</div></div>
+                            <div className="stat-card"><div className="stat-icon">📉</div><div className="stat-value">M {(stats.totalExpenses || 0).toLocaleString()}</div><div>Total Expenses</div></div>
                         </div>
                         <table className="data-table">
                             <thead><tr><th>Description</th><th>Amount (M)</th><th>Category</th><th>Date</th><th>Action</th></tr></thead>
