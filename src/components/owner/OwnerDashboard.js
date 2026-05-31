@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import logoImage from '../../assets/levis-logo.svg';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
@@ -24,8 +23,6 @@ function OwnerDashboard({ user, onLogout }) {
     const [expenseData, setExpenseData] = useState({ description: '', amount: '', category: 'Other', expense_date: '' });
 
     const token = localStorage.getItem('token');
-
-    const formatAmount = (value) => `M ${Number(value || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
     const fetchDashboard = useCallback(async () => {
         try {
@@ -211,12 +208,11 @@ function OwnerDashboard({ user, onLogout }) {
     const totalIncome = incomeList.reduce((sum, i) => sum + (parseFloat(i.amount) || 0), 0);
     const pieColors = ['#28a745', '#dc3545', '#ff6a00', '#17a2b8', '#ffc107', '#6f42c1'];
     const pieData = (chartData.categoryExpenses || []).map((c, i) => ({ name: c.category, value: parseFloat(c.total) || 0, color: pieColors[i % pieColors.length] }));
-    const totalCategoryExpenses = pieData.reduce((sum, item) => sum + item.value, 0);
 
     return (
         <div className="dashboard-container">
             <div className="sidebar">
-                <div className="sidebar-logo"><img src={logoImage} alt="Levis Barber Logo" /></div>
+                <div className="sidebar-logo">👑 LEVIS.BARBER</div>
                 <div className="sidebar-nav">
                     <button className={`nav-btn ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>📊 Dashboard</button>
                     <button className={`nav-btn ${activeTab === 'approvals' ? 'active' : ''}`} onClick={() => setActiveTab('approvals')}>✅ Approve Staff</button>
@@ -242,15 +238,14 @@ function OwnerDashboard({ user, onLogout }) {
                             </div>
                         </div>
                         <div className="stats-grid">
-                            <div className="stat-card"><div className="stat-icon">💰</div><div className="stat-value">{formatAmount(stats.totalRevenue)}</div><div>Total Revenue</div></div>
-                            <div className="stat-card"><div className="stat-icon">📉</div><div className="stat-value">{formatAmount(stats.totalExpenses)}</div><div>Total Expenses</div></div>
-                            <div className="stat-card"><div className="stat-icon">📈</div><div className="stat-value" style={{ color: (stats.netProfit || 0) >= 0 ? '#4caf50' : '#f44336' }}>{formatAmount(stats.netProfit)}</div><div>Net Profit</div></div>
+                            <div className="stat-card"><div className="stat-icon">💰</div><div className="stat-value">M {(stats.totalRevenue || 0).toLocaleString()}</div><div>Total Revenue</div></div>
+                            <div className="stat-card"><div className="stat-icon">📉</div><div className="stat-value">M {(stats.totalExpenses || 0).toLocaleString()}</div><div>Total Expenses</div></div>
+                            <div className="stat-card"><div className="stat-icon">📈</div><div className="stat-value" style={{ color: (stats.netProfit || 0) >= 0 ? '#4caf50' : '#f44336' }}>M {(stats.netProfit || 0).toLocaleString()}</div><div>Net Profit</div></div>
                             <div className="stat-card"><div className="stat-icon">👥</div><div className="stat-value">{stats.totalCustomers || 0}</div><div>Total Customers</div></div>
                         </div>
                         <div className="charts-grid">
                             <div className="chart-card">
                                 <h3>📈 Monthly Revenue Trend</h3>
-                                <div className="chart-summary"><span>{formatAmount(chartData.revenueTotal)} total revenue</span><span>{formatAmount(chartData.salariesTotal)} salary spend</span></div>
                                 <ResponsiveContainer width="100%" height={300}>
                                     <LineChart data={chartData.monthlyRevenue || []}>
                                         <CartesianGrid strokeDasharray="3 3" stroke="#333" />
@@ -264,7 +259,6 @@ function OwnerDashboard({ user, onLogout }) {
                             </div>
                             <div className="chart-card">
                                 <h3>🥧 Expenses Breakdown</h3>
-                                <div className="chart-summary"><span>{formatAmount(totalCategoryExpenses)} total categorized expenses</span></div>
                                 <ResponsiveContainer width="100%" height={300}>
                                     <PieChart>
                                         <Pie data={pieData} cx="50%" cy="50%" label={({ name, percent }) => `${name}: ${((percent || 0) * 100).toFixed(0)}%`} outerRadius={100} dataKey="value">
@@ -277,7 +271,6 @@ function OwnerDashboard({ user, onLogout }) {
                             </div>
                             <div className="chart-card">
                                 <h3>📊 Revenue vs Expenses</h3>
-                                <div className="chart-summary"><span>Revenue {formatAmount(chartData.revenueTotal)}</span><span>Expenses {formatAmount(chartData.expensesTotal)}</span></div>
                                 <ResponsiveContainer width="100%" height={300}>
                                     <BarChart data={[{ name: 'Revenue', amount: chartData.revenueTotal || 0 }, { name: 'Expenses', amount: chartData.expensesTotal || 0 }]}>
                                         <CartesianGrid strokeDasharray="3 3" stroke="#333" />
